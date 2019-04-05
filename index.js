@@ -6,7 +6,7 @@ function Reader(sexpr) {
 
 Reader.prototype.getc = function () {
   if (this.i == this.len) return null;
-  return this.sexpr[++this.i];
+  return this.sexpr[this.i++];
 }
 
 Reader.prototype.ungetc = function () {
