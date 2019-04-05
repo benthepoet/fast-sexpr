@@ -1,32 +1,27 @@
-class Reader {
-  constructor(sexpr) {
-    this.i = 0;
-    this.len = sexpr.length;
-    this.sexpr = sexpr;
-  }
-
-  getc() {
-    if (this.i == this.len) return null;
-    return this.sexpr[this.i++];
-  }
+module.exports = function (sexpr) {
+  var data = {
+    index: 0,
+    sexpr: sexpr
+  };
   
-  ungetc() {
-    this.i--;
-  }
+  return parse(data);
+};
 
-  readValue(terminator) {
-    var c, str = '';
-    while (!terminator(c = this.getc())) {
-      str += c;
-    }
-    return str;
-  }
+function getChar(data) {
+  if (data.index == data.sexpr.length) return null;
+  return data.sexpr[data.index++];
 }
 
-module.exports = {
-  parse(sexpr) {
-    return parse(new Reader(sexpr));
+function readValue(data, isTerminator) {
+    var c, value = '';
+    while (!isTerminator(c = getChar(data))) {
+      value += c;
+    }
+    return value;
   }
+
+function unGetChar(data) {
+  data.index--;
 }
 
 function isStringTerm(c) {
@@ -50,20 +45,20 @@ function isSpace(c) {
     || c == '\v';
 }
 
-function parse(reader) {
+function parse(data) {
   var c, list = [];
 
-  while (c = reader.getc()) {
+  while (c = getChar(data)) {
     if (c == ')') {
       break;
     } else if (c == '(') {
-      list.push(parse(reader));
+      list.push(parse(data));
     } else if (c == '"') {
-      list.push(reader.readValue(isStringTerm));
+      list.push(readValue(data, isStringTerm));
     } else if (!isSpace(c)) {
-      reader.ungetc();
-      list.push(reader.readValue(isListTerm));
-      reader.ungetc();
+      unGetChar(data);
+      list.push(readValue(data, isListTerm));
+      unGetChar(data);
     }
   }
 

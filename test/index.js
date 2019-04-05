@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-const { parse } = require('../');
+const parse = require('../');
 
 describe('Parser', function () {
 
