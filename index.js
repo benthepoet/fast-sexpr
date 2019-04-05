@@ -48,7 +48,7 @@ function isSpace(c) {
 function parse(data) {
   var c, list = [];
 
-  while (c = getChar(data)) {
+  while ((c = getChar(data))) {
     if (c == ')') {
       break;
     } else if (c == '(') {
