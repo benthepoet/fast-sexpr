@@ -63,6 +63,7 @@ function parse(reader) {
     } else if (!isSpace(c)) {
       reader.ungetc();
       list.push(reader.readValue(isListTerm));
+      reader.ungetc();
     }
   }
 
