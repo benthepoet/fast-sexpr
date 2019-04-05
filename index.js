@@ -1,45 +1,47 @@
-function Reader(sexpr) {
-  this.i = 0;
-  this.len = sexpr.length;
-  this.sexpr = sexpr;
-}
-
-Reader.prototype.getc = function () {
-  if (this.i == this.len) return null;
-  return this.sexpr[this.i++];
-}
-
-Reader.prototype.ungetc = function () {
-  if (this.i > 0) this.i--;
-}
-
-Reader.prototype.read_value = function (terminator) {
-  var c, str = '';
-  while (!terminator(c = this.getc())) {
-    str += c;
+class Reader {
+  constructor(sexpr) {
+    this.i = 0;
+    this.len = sexpr.length;
+    this.sexpr = sexpr;
   }
-  return str;
+
+  getc() {
+    if (this.i == this.len) return null;
+    return this.sexpr[this.i++];
+  }
+  
+  ungetc() {
+    this.i--;
+  }
+
+  readValue(terminator) {
+    var c, str = '';
+    while (!terminator(c = this.getc())) {
+      str += c;
+    }
+    return str;
+  }
 }
 
 module.exports = {
-  parse: function (sexpr) {
+  parse(sexpr) {
     return parse(new Reader(sexpr));
   }
 }
 
-function is_string_term(c) {
+function isStringTerm(c) {
   return !c 
     || c == '"';
 }
 
-function is_list_term(c) {
+function isListTerm(c) {
   return !c 
-    || is_space(c) 
+    || isSpace(c) 
     || c == '(' 
     || c == ')';
 }
 
-function is_space(c) {
+function isSpace(c) {
   return c == ' ' 
     || c == '\n' 
     || c == '\r' 
@@ -49,20 +51,20 @@ function is_space(c) {
 }
 
 function parse(reader) {
-  var c, lst = [];
+  var c, list = [];
 
   while (c = reader.getc()) {
     if (c == ')') {
       break;
     } else if (c == '(') {
-      lst.push(parse(reader));
+      list.push(parse(reader));
     } else if (c == '"') {
-      lst.push(reader.read_value(is_string_term));
-    } else if (!is_space(c)) {
+      list.push(reader.readValue(isStringTerm));
+    } else if (!isSpace(c)) {
       reader.ungetc();
-      lst.push(reader.read_value(is_list_term));
+      list.push(reader.readValue(isListTerm));
     }
   }
-  
-  return lst;
+
+  return list;
 }
