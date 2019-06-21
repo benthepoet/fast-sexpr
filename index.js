@@ -8,7 +8,7 @@ module.exports = function (sexpr) {
 };
 
 function getChar(data) {
-  if (data.index == data.sexpr.length) return null;
+  if (data.index === data.sexpr.length) return null;
   return data.sexpr[data.index++];
 }
 
@@ -26,34 +26,34 @@ function unGetChar(data) {
 
 function isStringTerm(c) {
   return !c 
-    || c == '"';
+    || c === '"';
 }
 
 function isListTerm(c) {
   return !c 
     || isSpace(c) 
-    || c == '(' 
-    || c == ')';
+    || c === '(' 
+    || c === ')';
 }
 
 function isSpace(c) {
-  return c == ' ' 
-    || c == '\n' 
-    || c == '\r' 
-    || c == '\t' 
-    || c == '\f' 
-    || c == '\v';
+  return c === ' ' 
+    || c === '\n' 
+    || c === '\r' 
+    || c === '\t' 
+    || c === '\f' 
+    || c === '\v';
 }
 
 function parse(data) {
   var c, list = [];
 
   while ((c = getChar(data))) {
-    if (c == ')') {
+    if (c === ')') {
       break;
-    } else if (c == '(') {
+    } else if (c === '(') {
       list.push(parse(data));
-    } else if (c == '"') {
+    } else if (c === '"') {
       list.push(readValue(data, isStringTerm));
     } else if (!isSpace(c)) {
       unGetChar(data);
